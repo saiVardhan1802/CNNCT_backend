@@ -31,6 +31,17 @@ router.get('/', async (req, res, next) => {
 router.put("/", async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
+        const { username } = req.body;
+        const usernameExists = await userModel.findOne({ username: username });
+        if (usernameExists) {
+            return res.status(409).json({ message: "This username is already in use." });
+        }
+        const { email } = req.body;
+        console.log(req.body)
+        const emailExists = await userModel.findOne({ email: email });
+        if (emailExists) {
+            return res.status(409).json({ message: "This email is already in use. "})
+        }
         if (!authHeader) {
             return res.status(401).json({ message: "Authorization header missing." });
         }
@@ -40,17 +51,20 @@ router.put("/", async (req, res, next) => {
             return res.status(401).json({ message: "Token missing." });
         }
 
-        console.log("Auth Header:", authHeader);
-        console.log("Extracted Token:", token);
-
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
         const userId = decoded.id;
+        console.log("Received Data:", JSON.stringify(req.body, null, 2));
 
-        const user = await userModel.findByIdAndUpdate(userId, req.body, { new: true });  // Ensures updated document is returned
+        const user = await userModel.findByIdAndUpdate(
+            userId, 
+            { $set: req.body },  // 🔥 Ensures only the provided fields get updated
+            { new: true }
+        );
+
         if (!user) {
-            console.log(userId);
             return res.status(404).json({ message: "User not found." });
         }
+        console.log(user.unavailability);
 
         return res.status(200).json(user);
     } catch (error) {

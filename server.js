@@ -10,6 +10,7 @@ const errorHandler = require('./middleware/errorHandler');
 
 const { authRoutes } = require("./routes/auth");
 const userRoutes = require("./routes/user");
+const meetingRoutes = require('./routes/meeting');
 
 dotenv.config();
 app.use(cors());
@@ -20,6 +21,7 @@ app.use(morgan('dev'));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/meeting', meetingRoutes);
 
 const PORT = process.env.PORT || 3000;
 
@@ -34,8 +36,8 @@ app.get("/", (req, res, next) => {
 app.listen(PORT, () => {
     console.log(`Server is running on PORT ${PORT}`);
     mongoose.connect(process.env.MONGODB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
+        // useNewUrlParser: true,
+        // useUnifiedTopology: true,
     }).then(() => {
         console.log("MongoDB connected");
     }).catch((err) => {
