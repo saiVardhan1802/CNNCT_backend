@@ -8,7 +8,7 @@ const { authMiddleware } = require("../middleware/authMiddleware");
 const userModel = require('../models/user.model');
 const { set, default: mongoose } = require('mongoose');
 
-router.post('/', async (req, res, next) => {
+router.post('/', authMiddleware, async (req, res, next) => {
     try {
         const { eventTopic, 
             password, 
@@ -67,7 +67,7 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', authMiddleware, async (req, res, next) => {
     try {
         const { id } = req.params; // Meeting ID from URL
         const { eventTopic, 
@@ -150,7 +150,7 @@ router.put('/:id', async (req, res, next) => {
     }
 });
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', authMiddleware, async (req, res, next) => {
     try {
         const { id } = req.params;
         const { userId, userEmail } = req.body; // userEmail is needed for invitee removal
@@ -178,7 +178,7 @@ router.delete('/:id', async (req, res, next) => {
     }
 });
 
-router.put('/:meetingId/toggle-active', async (req, res, next) => {
+router.put('/:meetingId/toggle-active', authMiddleware, async (req, res, next) => {
     try {
         const { meetingId } = req.params;
         console.log(meetingId);
@@ -212,7 +212,7 @@ router.put('/:meetingId/toggle-active', async (req, res, next) => {
     }
 });
 
-router.get('/user/:username', async (req, res, next) => {
+router.get('/user/:username', authMiddleware, async (req, res, next) => {
     try {
         const username = req.params.username;
         const user = await userModel.findOne({ username: username });
@@ -238,7 +238,7 @@ router.get('/user/:username', async (req, res, next) => {
 
 
 //to update status
-router.put("/:meetingId/invite", async (req, res, next) => {
+router.put("/:meetingId/invite", authMiddleware, async (req, res, next) => {
     try {
         const { userEmail, status } = req.body; // Expecting email and new status
         const meetingId = req.params.meetingId;
@@ -292,10 +292,6 @@ router.put("/:meetingId/invite", async (req, res, next) => {
 //         next(error);
 //     }
 // });
-
-router.get('/:meetingId', async (req, res, next) => {
-    
-} )
 
 function convertToUTC(timeInUser, userTimezone) {
     return moment.tz(timeInUser, 'YYYY-MM-DD hh:mm A', userTimezone).toDate();

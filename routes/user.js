@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const userModel = require("../models/user.model");
 const { authMiddleware } = require("../middleware/authMiddleware");
 
-router.get('/', async (req, res, next) => {
+router.get('/', authMiddleware , async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader) { 
@@ -28,7 +28,7 @@ router.get('/', async (req, res, next) => {
     }
 })
 
-router.put("/", async (req, res, next) => {
+router.put("/", authMiddleware, async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
         const { username } = req.body;
